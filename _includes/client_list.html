@@ -1,0 +1,8 @@
+<ul class="client-list">
+    {% for client_pair in site.data.clients %}
+    {% assign client_id = client_pair[0] %}
+    {% assign client = client_pair[1] %}
+    {% unless include.property.clients[client_id] %}{% continue %}{% endunless %}
+    <li><a href="{{ site.baseurl }}{{ include.property.url }}#{{ client_id }}">{{ client.label }}</a></li>
+    {% endfor %}
+</ul>

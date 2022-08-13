@@ -1,0 +1,18 @@
+---
+# this is the rendering order of clients
+
+outlook-desktop:
+  label: Outlook Desktop
+  description: Outlook 365 on desktop.
+
+owa:
+  label: OWA
+  description: Outlook on the web (OWA).
+
+google-web:
+  label: Google Web
+  description: Google on the web.
+
+teams-desktop:
+  label: Teams Desktop
+  description: Microsoft Teams on desktop.

@@ -1,0 +1,137 @@
+<div id="property-search-wrapper">
+    <ul id="property-search-filters" class="client-list">
+        {% for client_pair in site.data.clients %}
+        {% assign client_id = client_pair[0] %}
+        {% assign client = client_pair[1] %}
+        <li><a href="#+{{ client.label | downcase }}" data-title="{{ client.description | replace: '\n', ' ' }}">{{ client.label }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <input id="property-search" type="text" placeholder="Search among {{ site.properties | size }} properties: <property> +<client> ..."/>
+</div>
+
+<div id="property-table-wrapper">
+    <table id="property-table">
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Clients</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in site.properties %}
+            <tr>
+                <td><a href="{{ site.baseurl }}{{ file.url }}" class="property-name">{% include get_property_name path=file.path %}</a></td>
+                <td>{% include client_list.html property=file %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr><td id="search-message" colspan="2">No binary matches...</td></tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+ function filter(query) {
+     var queryArray = query.toLowerCase().trim().split(/ *\+/);
+     var binPattern = queryArray[0];
+     var clientPatterns = queryArray.splice(1);
+
+     // filter rows
+     var noResults = true;
+     document.querySelectorAll('#property-table tbody tr').forEach(function (row) {
+         var show = true;
+
+         var binName = row.children[0].firstElementChild.innerText.toLowerCase();
+         if (binName.indexOf(binPattern) === -1) {
+             show = false;
+         }
+
+         if (show) {
+             var clientElems = Array.from(row.children[1].firstElementChild.children);
+             clientElems.forEach((item) => {
+                 item.className = '';
+             });
+             clientPatterns.forEach((pattern) => {
+                 // skip empty filters
+                 if (!pattern) {
+                     return;
+                 }
+                 // check against the pattern
+                 var noMatches = true;
+                 clientElems.forEach((item) => {
+                     if (item.innerText.toLowerCase().startsWith(pattern.toLowerCase())) {
+                         item.className = 'match';
+                         noMatches = false;
+                     }
+                 });
+                 // no client satisfies the pattern
+                 if (noMatches) {
+                     show = false;
+                 }
+             });
+         }
+
+         if (show) {
+             row.style.display = '';
+             noResults = false;
+         } else {
+             row.style.display = 'none';
+         }
+     });
+
+     // update the search message visibility
+     var searchMessage = document.getElementById('search-message');
+     searchMessage.style.display = noResults ? 'table-cell' : 'none';
+ }
+
+ function applyFilter() {
+     // filter on load according to the URL
+     var searchBox = document.getElementById('property-search');
+     var query = decodeURIComponent(location.hash.slice(1));
+     filter(query);
+     if (query) {
+         searchBox.value = query;
+     }
+ }
+
+ function setup() {
+     var searchBox = document.getElementById('property-search');
+
+     // ensure height during filtering
+     var binTableWrapper = document.getElementById('property-table-wrapper');
+     binTableWrapper.style.height = binTableWrapper.clientHeight + 'px';
+
+     // handle user input
+     searchBox.addEventListener('input', function () {
+         var query = searchBox.value;
+         history.replaceState(null, null, encodeURI('#' + query));
+         applyFilter();
+     });
+
+     // handle shortcuts
+     addEventListener('keydown', function (event) {
+         // focus search box on valid keydown
+         if (event.key.toLowerCase().match(/^[+a-z]$/) &&
+             !(event.ctrlKey || event.altKey || event.metaKey)) {
+             searchBox.focus();
+             searchBox.parentElement.scrollIntoView();
+         }
+         // clear filter on escape
+         else if (event.key === 'Escape') {
+             location.hash = searchBox.value = '';
+             searchBox.focus();
+             searchBox.parentElement.scrollIntoView();
+         }
+     });
+
+     // handle URL changes
+     window.onhashchange = applyFilter;
+
+     // trigger filter on page load
+     applyFilter();
+ }
+
+ setup();
+</script>

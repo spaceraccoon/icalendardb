@@ -1,0 +1,43 @@
+---
+layout: common
+---
+
+{% capture property_name %}{% include get_property_name path=page.path %}{% endcapture %}
+
+{% include page_title.html title=property_name %}
+
+{% include client_list.html property=page %}
+
+<h2>Description </h2>
+
+{{ page.description | markdownify }}
+
+<h2>Type</h2>
+{{ page.type | markdownify }}
+
+<h2>Example</h2>
+<pre><code>{{- page.example | escape -}}</code></pre>
+
+<h2>Clients</h2>
+
+{% for client_pair in site.data.clients %}
+{% assign client_id = client_pair[0] %}
+{% assign client = client_pair[1] %}
+{% assign examples = page.clients[client_id] %}
+{% unless examples %}{% continue %}{% endunless %}
+
+<h3 id="{{ client_id }}">{{- client.label -}}</h3>
+
+{% for example in examples %}
+    {{ example.description | markdownify }}
+{% endfor %}
+
+{% endfor %}
+
+<h2>References</h2>
+
+<ul></ul>
+{% for reference in page.references %}
+    <li><a href="{{reference}}">{{reference}}</a></li>
+{% endfor %}
+</ul>
