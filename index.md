@@ -12,9 +12,9 @@ It is important to note that this is **not** a list of exploits, and the propert
 icalendardb is a [collaborative][] project created by [spaceraccoon][] based on [GTFOBins](https://github.com/GTFOBins/GTFOBins.github.io) where everyone can [contribute][] with additional properties and clients.
 
 
-[clients]: /clients/
+[clients]: clients/
 [collaborative]: https://github.com/spaceraccoon/icalendardb/graphs/contributors
-[contribute]: /contribute/
+[contribute]: contribute/
 [spaceraccoon]: https://twitter.com/spaceraccoonsec
 
 {% include property_table.html %}
